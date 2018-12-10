@@ -3,6 +3,7 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.ibatis.type.IntegerTypeHandler;
 
 import java.io.Reader;
 
@@ -18,7 +19,7 @@ public class App {
 //            System.out.println(object);
             Object object2 = session.selectOne("test.findBlogById",1);
             System.out.println(object2);
-
+            //IntegerTypeHandler
         }catch (Exception e){
             e.printStackTrace();
         }

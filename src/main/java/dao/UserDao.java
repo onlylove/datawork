@@ -6,7 +6,7 @@ import model.User;
 import java.util.List;
 
 public class UserDao {
-//    private static SqlSession session;//设置成静态就不用每次就new了
+//    private static Session session;//设置成静态就不用每次就new了
 //    static {
 //        session= SessionBean.getSession();
 //    }
