@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="test">
+
+    <!-- 超复杂的 Result Map -->
+    <resultMap id="detailedBlogResultMap" type="model.Blog">
+        <!--<constructor>-->
+            <!--<idArg column="blog_id" javaType="int"/>-->
+        <!--</constructor>-->
+        <id property="id" column="blog_id"/>
+        <result property="title" column="blog_title"/>
+
+        <association property="author" javaType="model.Author">
+            <id property="id" column="author_id"/>
+            <result property="username" column="author_username"/>
+            <result property="password" column="author_password"/>
+            <result property="email" column="author_email"/>
+            <result property="bio" column="author_bio"/>
+            <result property="favouriteSection" column="author_favourite_section"/>
+        </association>
+
+        <collection property="posts" ofType="model.Post">
+            <id property="id" column="post_id"/>
+            <result property="subject" column="post_subject"/>
+            <result property="createdOn" column="post_created_on"/>
+            <result property="body" column="post_body"/>
+            <result property="section" column="post_section"/>
+
+            <!--<association property="author" javaType="model.Author"/>-->
+
+            <collection property="comments" ofType="model.Comment">
+                <id property="id" column="comment_id"/>
+                <result property="name" column="comment_name"/>
+                <result property="comment" column="comment_text"/>
+            </collection>
+
+            <collection property="tags" ofType="model.Tag" >
+                <id property="id" column="tag_id"/>
+                <result property="name" column="tag_name"/>
+            </collection>
+
+            <!--<discriminator javaType="int" column="draft">-->
+                <!--<case value="1" resultType="DraftPost"/>-->
+            <!--</discriminator>-->
+
+        </collection>
+
+    </resultMap>
+
+    <resultMap id="userResultMap" type="model.User">
+        <id property="id" column="id" />
+        <result property="name" column="name"/>
+        <result property="password" column="password"/>
+    </resultMap>
+
+    <select id="findBlogById" parameterType="int" resultMap="detailedBlogResultMap">
+        select
+            B.id as blog_id,
+            B.title as blog_title,
+            B.author_id as blog_author_id,
+
+            A.id as author_id,
+            A.username as author_username,
+            A.password as author_password,
+            A.email as author_email,
+            A.bio as author_bio,
+            A.favourite_section as author_favourite_section,
+
+            P.id as post_id,
+            P.blog_id as post_blog_id,
+            P.author_id as post_author_id,
+            P.created_on as post_created_on,
+            P.section as post_section,
+            P.subject as post_subject,
+            P.body as post_body,
+
+            P.draft as draft,
+
+            C.id as comment_id,
+            C.post_id as comment_post_id,
+            C.name as comment_name,
+            C.comment as comment_text,
+
+            T.id as tag_id,
+            T.name as tag_name
+
+        from Blog B
+            left outer join Author A on B.author_id = A.id
+            left outer join Post P on B.id = P.blog_id
+            left outer join Comment C on P.id = C.post_id
+            left outer join Post_Tag PT on PT.post_id = P.id
+            left outer join Tag T on PT.tag_id = T.id
+        where B.id = #{id}
+    </select>
+
+    <!-- 通过id查询用户 -->
+    <select id="findUserById" parameterType="int" resultMap="userResultMap">
+        select id,name,password from user where id = #{id}
+    </select>
+    <!--通过name查找一个list的用户，模糊匹配-->
+    <select id="findUserByName" parameterType="java.lang.String" resultType="model.User">
+        select * from user where name like '%${value}%'
+    </select>
+    <!--插入用户信息-->
+    <insert id="insertUser" parameterType="model.User">
+        insert into user(name,password) values(#{name},#{password})
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id()
+--             这里是对于主键属性的id进行赋值
+        </selectKey>
+    </insert>
+    <!--删除用户信息-->
+    <delete id="deleteUser" parameterType="java.lang.Integer">
+        delete from user where id=#{id}
+    </delete>
+    <!--更新用户信息-->
+    <update id="updateUser" parameterType="model.User">
+        update user set name=#{name},password=#{password} where id=#{id}
+    </update>
+</mapper>
