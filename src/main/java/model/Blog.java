@@ -5,7 +5,6 @@ import java.util.List;
 public class Blog {
     private int id;
     private String title;
-    private Integer authorId;
 
     private Author author;
 
@@ -29,14 +28,6 @@ public class Blog {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public Integer getAuthorId() {
-        return authorId;
-    }
-
-    public void setAuthorId(Integer authorId) {
-        this.authorId = authorId;
     }
 
     public Author getAuthor() {

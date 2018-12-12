@@ -3,7 +3,6 @@ package model;
 public class Comment {
 
     private int id;
-    private int postId;
     private String name;
     private String comment;
 
@@ -13,14 +12,6 @@ public class Comment {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getPostId() {
-        return postId;
-    }
-
-    public void setPostId(int postId) {
-        this.postId = postId;
     }
 
     public String getName() {

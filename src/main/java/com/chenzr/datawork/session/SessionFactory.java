@@ -1,7 +1,9 @@
 package com.chenzr.datawork.session;
 
+import java.sql.SQLException;
+
 public interface SessionFactory {
 
-    Session openSession();
+    public Session openSession() throws SQLException;
 
 }

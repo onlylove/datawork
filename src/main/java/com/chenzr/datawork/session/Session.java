@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface Session extends Closeable {
 
-    <T> T selectOne(String statement);
+    <T> T selectOne(String statement,Object object);
 
-    <E> List<E> selectList(String statement);
+    <E> List<E> selectList(String statement,Object object);
 
     int insert(String statement);
 

@@ -5,50 +5,46 @@
 
 <mapper namespace="test">
 
-    <!-- 超复杂的 Result Map -->
-    <resultMap id="detailedBlogResultMap" type="model.Blog">
-        <!--<constructor>-->
-            <!--<idArg column="blog_id" javaType="int"/>-->
-        <!--</constructor>-->
-        <id property="id" column="blog_id"/>
-        <result property="title" column="blog_title"/>
+    <resultMap id="authorResult" type="model.Author" >
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="bio" column="bio"/>
+        <result property="favouriteSection" column="author_favourite_section"/>
+    </resultMap>
 
-        <association property="author" javaType="model.Author">
-            <id property="id" column="author_id"/>
-            <result property="username" column="author_username"/>
-            <result property="password" column="author_password"/>
-            <result property="email" column="author_email"/>
-            <result property="bio" column="author_bio"/>
-            <result property="favouriteSection" column="author_favourite_section"/>
-        </association>
+    <resultMap id="commentsResult" type="model.Comment" >
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="comment" column="text"/>
+    </resultMap>
 
-        <collection property="posts" ofType="model.Post">
-            <id property="id" column="post_id"/>
-            <result property="subject" column="post_subject"/>
-            <result property="createdOn" column="post_created_on"/>
-            <result property="body" column="post_body"/>
-            <result property="section" column="post_section"/>
+    <resultMap id="tagsResult" type="model.Tag" >
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+    </resultMap>
 
-            <!--<association property="author" javaType="model.Author"/>-->
+    <resultMap id="postsResult" type="model.Post" >
+        <id property="id" column="id"/>
+        <result property="subject" column="subject"/>
+        <result property="createdOn" column="created_on"/>
+        <result property="body" column="body"/>
+        <result property="section" column="section"/>
+        <collection property="comments" ofType="model.Comment" columnPrefix="comment_" resultMap="commentsResult" />
+        <collection property="tags" ofType="model.Tag" columnPrefix="tag_" resultMap="tagsResult" />
+    </resultMap>
 
-            <collection property="comments" ofType="model.Comment">
-                <id property="id" column="comment_id"/>
-                <result property="name" column="comment_name"/>
-                <result property="comment" column="comment_text"/>
-            </collection>
+    <resultMap id="detailedBlogResultMap" type="model.Blog" >
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
 
-            <collection property="tags" ofType="model.Tag" >
-                <id property="id" column="tag_id"/>
-                <result property="name" column="tag_name"/>
-            </collection>
+        <association property="author"  columnPrefix="author_" javaType="model.Author" resultMap="authorResult" />
 
-            <!--<discriminator javaType="int" column="draft">-->
-                <!--<case value="1" resultType="DraftPost"/>-->
-            <!--</discriminator>-->
-
-        </collection>
+        <collection property="posts"  ofType="model.Post" columnPrefix="post_" resultMap="postsResult" />
 
     </resultMap>
+
 
     <resultMap id="userResultMap" type="model.User">
         <id property="id" column="id" />
@@ -58,9 +54,8 @@
 
     <select id="findBlogById" parameterType="int" resultMap="detailedBlogResultMap">
         select
-            B.id as blog_id,
-            B.title as blog_title,
-            B.author_id as blog_author_id,
+            B.id as id,
+            B.title as title,
 
             A.id as author_id,
             A.username as author_username,
@@ -79,13 +74,13 @@
 
             P.draft as draft,
 
-            C.id as comment_id,
-            C.post_id as comment_post_id,
-            C.name as comment_name,
-            C.comment as comment_text,
+            C.id as post_comment_id,
+            C.post_id as post_comment_post_id,
+            C.name as post_comment_name,
+            C.comment as post_comment_text,
 
-            T.id as tag_id,
-            T.name as tag_name
+            T.id as  post_tag_id,
+            T.name as  post_tag_name
 
         from Blog B
             left outer join Author A on B.author_id = A.id
@@ -93,7 +88,7 @@
             left outer join Comment C on P.id = C.post_id
             left outer join Post_Tag PT on PT.post_id = P.id
             left outer join Tag T on PT.tag_id = T.id
-        where B.id = #{id}
+        where B.id = B.id
     </select>
 
     <!-- 通过id查询用户 -->
