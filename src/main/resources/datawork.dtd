@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!ELEMENT mapper  (resultMap*,properties*)+>
+
+<!ELEMENT resultMap (id*,result*,association*,collection*)>
+<!ATTLIST resultMap
+        id CDATA #REQUIRED
+        type CDATA #REQUIRED
+        table CDATA #IMPLIED
+        extends CDATA #IMPLIED
+        >
+
+<!ELEMENT properties (property*)>
+<!ATTLIST properties
+        namespace CDATA #IMPLIED
+        >
+
+<!ELEMENT property EMPTY>
+<!ATTLIST property
+        id CDATA #REQUIRED
+        label CDATA #REQUIRED
+        name CDATA #REQUIRED
+        column CDATA #REQUIRED
+        type CDATA #REQUIRED
+        notNull (true|false) "true"
+        length CDATA #IMPLIED
+        precision CDATA #IMPLIED
+        scale CDATA #IMPLIED
+        >
+
+<!ELEMENT id (generator*)>
+<!ATTLIST id
+        property CDATA #IMPLIED
+        column CDATA #IMPLIED
+        generator (native | identity | uuid | assigned | increment | custom) "native"
+        propertyRef CDATA #IMPLIED
+        >
+
+<!ELEMENT generator EMPTY>
+<!ATTLIST generator
+        class CDATA #REQUIRED
+        >
+
+<!ELEMENT result EMPTY>
+<!ATTLIST result
+        property CDATA #IMPLIED
+        column CDATA #IMPLIED
+        foreignKey (true|false) #IMPLIED
+        unique (true|false) "false"
+        uniqueKey CDATA #IMPLIED
+        index CDATA #IMPLIED
+        update (true|false) #IMPLIED
+        insert (true|false) #IMPLIED
+        notNull (true|false) "true"
+        propertyRef CDATA #IMPLIED
+        >
+
+<!ELEMENT collection (id*,result*,association*,collection*,(exclusion*|include*))>
+<!ATTLIST collection
+        property CDATA #REQUIRED
+        resultMap CDATA #IMPLIED
+        columnPrefix CDATA #IMPLIED
+        resultSet CDATA #IMPLIED
+        joinTable CDATA #IMPLIED
+        joinColumn CDATA #IMPLIED
+        foreignColumn CDATA #IMPLIED
+        >
+
+<!ELEMENT association (id*,result*,association*,collection*,(exclusion*|include*))>
+<!ATTLIST association
+        property CDATA #REQUIRED
+        column CDATA #IMPLIED
+        resultMap CDATA #IMPLIED
+        typeHandler CDATA #IMPLIED
+        columnPrefix CDATA #IMPLIED
+        resultSet CDATA #IMPLIED
+        >
+
+<!ELEMENT exclusion EMPTY>
+<!ATTLIST exclusion
+        property CDATA #IMPLIED
+        >
+
+<!ELEMENT include EMPTY>
+<!ATTLIST include
+        property CDATA #IMPLIED
+        >

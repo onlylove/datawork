@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "datawork.dtd">
+
+<mapper>
+
+    <properties>
+        <property id="id" label="ID" name="id" column="id" type="INTEGER" length="11"/>
+        <property id="int" label="整型" name="id" column="id" type="INTEGER" length="11"/>
+        <property id="string" label="中字符串" name="text" column="text" type="VARCHAR" length="50"/>
+        <property id="longstring" label="长字符串" name="text" column="text" type="VARCHAR" length="255"/>
+        <property id="date" label="日期" name="date" column="date" type="TIMESTAMP" length="50"/>
+        <property id="title" label="标题" name="title" column="title" type="VARCHAR" length="50"/>
+        <property id="name" label="名称" name="name" column="name" type="VARCHAR" length="50"/>
+        <property id="username" label="用户名" name="username" column="username" type="VARCHAR" length="50"/>
+        <property id="password" label="密码" name="password" column="password" type="VARCHAR" length="60"/>
+        <property id="email" label="邮件" name="email" column="email" type="VARCHAR" length="20"/>
+        <property id="comment" label="意见" name="comment" column="comment" type="VARCHAR" length="255"/>
+    </properties>
+
+    <resultMap id="authorResult" type="model.Author" table="author" >
+        <id generator="custom" propertyRef="id">
+            <generator class="generator.native" />
+        </id>
+        <result propertyRef="username" />
+        <result propertyRef="password" />
+        <result propertyRef="email" />
+        <result property="bio" column="bio" propertyRef="string" />
+        <result property="favouriteSection" column="author_favourite_section" propertyRef="string" />
+    </resultMap>
+
+    <resultMap id="commentsResult" type="model.Comment" table="comment" >
+        <id propertyRef="id"/>
+        <result propertyRef="name" notNull="true" />
+        <result column="text" propertyRef="comment" />
+        <result property="postId" column="post_Id" foreignKey="true" propertyRef="int" />
+    </resultMap>
+
+    <resultMap id="tagsResult" type="model.Tag" table="tag" >
+        <id propertyRef="id"/>
+        <result propertyRef="name" />
+    </resultMap>
+
+    <resultMap id="postsResult" type="model.Post" table="post" >
+        <id propertyRef="id"/>
+        <result property="subject" column="subject"  propertyRef="string" />
+        <result property="createdOn" column="created_on"  propertyRef="date"/>
+        <result property="body" column="body"  propertyRef="longstring" />
+        <result property="section" column="section"  propertyRef="string" />
+        <result property="blog_id" column="blog_id" foreignKey="true" propertyRef="int" />
+
+        <!--  one to may-->
+        <collection property="comments" columnPrefix="comment_" foreignColumn="post_Id"  resultMap="commentsResult">
+            <exclusion property="postId" />
+        </collection>
+
+        <!--  may to may-->
+        <collection property="tags" columnPrefix="tag_" joinTable="post_tag" joinColumn="post_id" foreignColumn="tag_id" resultMap="tagsResult">
+            <include property="name" />
+        </collection>
+
+    </resultMap>
+
+    <resultMap id="detailedBlogResultMap" type="model.Blog" table="blog" >
+        <id propertyRef="id"/>
+        <result notNull="true" propertyRef="title"/>
+
+        <!-- one to one-->
+        <association property="author" columnPrefix="author_" column="author_id"  resultMap="authorResult">
+            <exclusion property="password" />
+        </association>
+
+        <!--  one to may-->
+        <collection property="posts" columnPrefix="blog_" foreignColumn="blog_id" resultMap="postsResult">
+            <exclusion property="blogId" />
+            <exclusion property="draft" />
+        </collection>
+
+    </resultMap>
+
+</mapper>

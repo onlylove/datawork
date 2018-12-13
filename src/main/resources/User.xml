@@ -53,6 +53,7 @@
     </resultMap>
 
     <select id="findBlogById" parameterType="int" resultMap="detailedBlogResultMap">
+        <include refid="ss"/>
         select
             B.id as id,
             B.title as title,

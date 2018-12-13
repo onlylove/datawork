@@ -13,7 +13,7 @@ import java.sql.*;
 
 public class App {
 
-    public static void main11(String [] args) throws Exception{
+    public static void main(String [] args) throws Exception{
         try{
             String resource = "mybatis-config.xml";
             Reader reader = Resources.getResourceAsReader(resource);
@@ -31,7 +31,7 @@ public class App {
     }
 
 
-    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+    public static void main33(String[] args) throws ClassNotFoundException, SQLException {
         //1.声明链接参数
         String url = "jdbc:mysql://localhost:3306/mybatis";//数据库的路径
         String user = "root";
