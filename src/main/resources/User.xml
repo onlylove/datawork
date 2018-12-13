@@ -88,7 +88,7 @@
             left outer join Comment C on P.id = C.post_id
             left outer join Post_Tag PT on PT.post_id = P.id
             left outer join Tag T on PT.tag_id = T.id
-        where B.id = B.id
+        where B.id = 3
     </select>
 
     <!-- 通过id查询用户 -->

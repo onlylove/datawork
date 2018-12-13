@@ -21,7 +21,7 @@ public class App {
             SqlSession session = factory.openSession();
 //            Object object = session.selectOne("test.findUserById",1);
 //            System.out.println(object);
-            Object object2 = session.selectList("test.findBlogById",1);
+            Object object2 = session.selectList("test.findBlogById",3);
             System.out.println(JSON.toJSON(object2));
             //IntegerTypeHandler
 
@@ -70,7 +70,7 @@ public class App {
                 "LEFT OUTER JOIN Post P ON B.id = P.blog_id\n" +
                 "LEFT OUTER JOIN COMMENT C ON P.id = C.post_id\n" +
                 "LEFT OUTER JOIN Post_Tag PT ON PT.post_id = P.id\n" +
-                "LEFT OUTER JOIN Tag T ON PT.tag_id = T.id";
+                "LEFT OUTER JOIN Tag T ON PT.tag_id = T.id ";
         //5.创建sql发送器，是由链接对象创建的
         PreparedStatement pst = con.prepareStatement(sql);
         //6.发送并执行sql语句，得到结果集

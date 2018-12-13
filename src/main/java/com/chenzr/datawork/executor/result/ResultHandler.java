@@ -1,4 +1,10 @@
 package com.chenzr.datawork.executor.result;
 
-public interface ResultHandler {
+
+import com.chenzr.datawork.session.ResultContext;
+
+public interface ResultHandler<T> {
+
+    void handleResult(ResultContext<? extends T> resultContext);
+
 }

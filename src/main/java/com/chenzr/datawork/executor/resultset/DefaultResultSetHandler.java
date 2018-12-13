@@ -3,6 +3,7 @@ package com.chenzr.datawork.executor.resultset;
 
 import com.chenzr.datawork.cache.CacheKey;
 import com.chenzr.datawork.executor.ExecutorException;
+import com.chenzr.datawork.executor.result.DefaultResultHandler;
 import com.chenzr.datawork.executor.result.ResultHandler;
 import com.chenzr.datawork.mapping.ResultMap;
 import com.chenzr.datawork.mapping.ResultMapping;
@@ -15,9 +16,10 @@ import com.chenzr.datawork.reflection.factory.ObjectFactory;
 import com.chenzr.datawork.reflection.wrapper.DefaultObjectWrapperFactory;
 import com.chenzr.datawork.reflection.wrapper.ObjectWrapperFactory;
 import com.chenzr.datawork.type.*;
+import model.Author;
 import model.Blog;
+import model.Comment;
 import model.Post;
-import org.apache.ibatis.executor.result.DefaultResultContext;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,12 +36,63 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     private HashMap<String, ResultMap> resultMaps = new HashMap<>();
 
     private HashMap<CacheKey, Object> nestedResultObjects = new HashMap<CacheKey, Object>();
+    private HashMap<CacheKey, Object> simpleResultObjects = new HashMap<CacheKey, Object>();
 
     public MetaObject newMetaObject(Object object) {
         return MetaObject.forObject(object, objectFactory, objectWrapperFactory, reflectorFactory);
     }
 
     private ResultMap createResultMap() {
+
+        //========Author=========//
+        List<ResultMapping> AuthorResultMappings = new ArrayList<>();
+
+        ResultMapping AuthorID = new ResultMapping("id", "id", Integer.class, JdbcType.INTEGER, new IntegerTypeHandler(), null, null, null);
+        AuthorResultMappings.add(AuthorID);
+        ResultMapping AuthorName = new ResultMapping("username", "username", String.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
+        AuthorResultMappings.add(AuthorName);
+
+        List<ResultMapping> AuthorIDResultMappings = new ArrayList<>();
+        AuthorIDResultMappings.add(AuthorID);
+
+        List<ResultMapping> AuthorPropertyResultMappings = new ArrayList<>();
+        AuthorPropertyResultMappings.add(AuthorID);
+        AuthorPropertyResultMappings.add(AuthorName);
+
+        Set<String> AuthormappedColumns = new HashSet<>();
+        AuthormappedColumns.add("id");
+        AuthormappedColumns.add("username");
+
+        ResultMap AuthorMap = new ResultMap("_Author", Author.class, AuthorResultMappings, AuthorIDResultMappings, AuthorPropertyResultMappings, AuthormappedColumns, true);
+        resultMaps.put("_Author", AuthorMap);
+        //========Author=========//
+
+        //========Comment=========//
+        List<ResultMapping> commentResultMappings = new ArrayList<>();
+
+        ResultMapping commentresultID = new ResultMapping("id", "id", Integer.class, JdbcType.INTEGER, new IntegerTypeHandler(), null, null, null);
+        commentResultMappings.add(commentresultID);
+        ResultMapping commenresultName = new ResultMapping("name", "name", String.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
+        commentResultMappings.add(commenresultName);
+        ResultMapping commentresultNamecomment = new ResultMapping("comment", "text", String.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
+        commentResultMappings.add(commentresultNamecomment);
+
+        List<ResultMapping> commentIDResultMappings = new ArrayList<>();
+        commentIDResultMappings.add(commentresultID);
+
+        List<ResultMapping> commentPropertyResultMappings = new ArrayList<>();
+        commentPropertyResultMappings.add(commentresultID);
+        commentPropertyResultMappings.add(commenresultName);
+        commentPropertyResultMappings.add(commentresultNamecomment);
+
+        Set<String> commentmappedColumns = new HashSet<>();
+        commentmappedColumns.add("id");
+        commentmappedColumns.add("name");
+        commentmappedColumns.add("comment");
+
+        ResultMap commentMap = new ResultMap("_Comment", Comment.class, commentResultMappings, commentIDResultMappings, commentPropertyResultMappings, commentmappedColumns, true);
+        resultMaps.put("_Comment", commentMap);
+        //========Comment=========//
 
         //========POST=========//
         List<ResultMapping> postResultMappings = new ArrayList<>();
@@ -49,6 +102,8 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         ResultMapping postresultbody = new ResultMapping("body", "body", String.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
         postResultMappings.add(postresultbody);
 
+        ResultMapping resultcomment = new ResultMapping("comments", null, Collection.class, null, new ArrayTypeHandler(), "comment_", null, "_Comment");
+        postResultMappings.add(resultcomment);
 
         List<ResultMapping> postIdResultMappings = new ArrayList<>();
         postIdResultMappings.add(postresultID);
@@ -56,6 +111,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         List<ResultMapping> postPropertyResultMappings = new ArrayList<>();
         postPropertyResultMappings.add(postresultID);
         postPropertyResultMappings.add(postresultbody);
+        postPropertyResultMappings.add(resultcomment);
 
         Set<String> postmappedColumns = new HashSet<>();
         postmappedColumns.add("id");
@@ -78,6 +134,9 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         ResultMapping resultPost = new ResultMapping("posts", null, Collection.class, null, new ArrayTypeHandler(), "post_", null, "_Post");
         resultMappings.add(resultPost);
 
+        ResultMapping resultAuthor = new ResultMapping("author", null, Author.class, null, null, "author_", null, "_Author");
+        resultMappings.add(resultAuthor);
+
         List<ResultMapping> idResultMappings = new ArrayList<>();
         idResultMappings.add(resultID);
 
@@ -85,6 +144,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         propertyResultMappings.add(resultID);
         propertyResultMappings.add(resultTitle);
         propertyResultMappings.add(resultPost);
+        propertyResultMappings.add(resultAuthor);
 
         Set<String> mappedColumns = new HashSet<>();
         mappedColumns.add("id");
@@ -97,28 +157,37 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         return map;
     }
 
+
     @Override
-    public <E> List<E> handleResultSets(Statement stmt) throws SQLException {
-        List<Object> results = new ArrayList<>();
-        ResultSetWrapper rsw = getFirstResultSet(stmt);
-        ResultMap rm = createResultMap();
-        handleResultSet(rsw, rm, results, null);
-        return null;
+    public List<Object> handleResultSets(Statement stmt) throws SQLException {
+        final List<Object> multipleResults = new ArrayList<Object>();
+        try{
+            ResultSetWrapper rsw = getFirstResultSet(stmt);
+            ResultMap rm = createResultMap();
+            handleResultSet(rsw, rm, multipleResults, null);
+            return collapseSingleResultList(multipleResults);
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            cleanUpAfterHandlingResultSet();
+        }
+        return collapseSingleResultList(multipleResults);
     }
 
-    private void handleResultSet(ResultSetWrapper rsw, ResultMap resultMap, List<Object> results, ResultMapping parentMapping) throws SQLException {
+    private void handleResultSet(ResultSetWrapper rsw, ResultMap resultMap, List<Object> multipleResults, ResultMapping parentMapping) throws SQLException {
         try {
             if (parentMapping != null) {
                 handleRowValues(rsw, resultMap, null, parentMapping);
             } else {
                 if (resultHandler == null) {
-                    handleRowValues(rsw, resultMap, resultHandler, null);
+                    DefaultResultHandler defaultResultHandler = new DefaultResultHandler(objectFactory);
+                    handleRowValues(rsw, resultMap, defaultResultHandler, null);
+                    multipleResults.add(defaultResultHandler.getResultList());
                 } else {
                     handleRowValues(rsw, resultMap, resultHandler, null);
                 }
             }
         } finally {
-            // issue #228 (close resultsets)
             closeResultSet(rsw.getResultSet());
         }
     }
@@ -127,20 +196,51 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         if (resultMap.hasNestedResultMaps()) {
             handleRowValuesForNestedResultMap(rsw, resultMap, resultHandler, parentMapping);
         } else {
-//            handleRowValuesForSimpleResultMap(rsw, resultMap, resultHandler, rowBounds, parentMapping);
+            handleRowValuesForSimpleResultMap(rsw, resultMap, resultHandler, parentMapping);
         }
     }
 
+    private void handleRowValuesForSimpleResultMap(ResultSetWrapper rsw, ResultMap resultMap, ResultHandler<?> resultHandler, ResultMapping parentMapping)
+            throws SQLException {
+        DefaultResultContext<Object> resultContext = new DefaultResultContext<Object>();
+        while (rsw.getResultSet().next()) {
+            final CacheKey rowKey = createRowKey(resultMap, rsw, null);
+            Object partialObject = simpleResultObjects.get(rowKey);
+            Object rowValue = getRowValue(rsw, resultMap, rowKey);
+            if (partialObject == null) {
+                storeObject(resultHandler, resultContext, rowValue, parentMapping, rsw.getResultSet());
+            }
+        }
+    }
+
+    //
+    // GET VALUE FROM ROW FOR SIMPLE RESULT MAP
+    //
+    private Object getRowValue(ResultSetWrapper rsw, ResultMap resultMap,CacheKey rowKey) throws SQLException {
+        Object resultObject = createResultObject(rsw, resultMap, null);
+        if (resultObject != null) {
+            final MetaObject metaObject = newMetaObject(resultObject);
+            boolean foundValues = false;
+            foundValues = applyPropertyMappings(rsw, resultMap, metaObject, null) || foundValues;
+            resultObject = foundValues ? resultObject : null;
+            if (rowKey != CacheKey.NULL_CACHE_KEY && null != resultObject) {
+                simpleResultObjects.put(rowKey, resultObject);
+            }
+            return resultObject;
+        }
+        return resultObject;
+    }
+
     private void handleRowValuesForNestedResultMap(ResultSetWrapper rsw, ResultMap resultMap, ResultHandler resultHandler, ResultMapping parentMapping) throws SQLException {
+        final DefaultResultContext<Object> resultContext = new DefaultResultContext<Object>();
         Object rowValue = null;
         while (rsw.getResultSet().next()) {
             final CacheKey rowKey = createRowKey(resultMap, rsw, null);
             Object partialObject = nestedResultObjects.get(rowKey);
             rowValue = getRowValue(rsw, resultMap, rowKey, rowKey, null, partialObject);
             if (partialObject == null) {
-//                storeObject(resultHandler, resultContext, rowValue, parentMapping, rsw.getResultSet());
+                storeObject(resultHandler, resultContext, rowValue, parentMapping, rsw.getResultSet());
             }
-            System.out.println(rowValue);
         }
     }
 
@@ -157,6 +257,10 @@ public class DefaultResultSetHandler implements ResultSetHandler {
             if (resultObject != null) {
                 foundValues = applyPropertyMappings(rsw, resultMap, metaObject, columnPrefix) || foundValues;
                 foundValues = applyNestedResultMappings(rsw, resultMap, metaObject, columnPrefix, combinedKey, true) || foundValues;
+                resultObject = foundValues ? resultObject : null;
+            }
+            if (combinedKey != CacheKey.NULL_CACHE_KEY) {
+                nestedResultObjects.put(combinedKey, resultObject);
             }
         }
         return resultObject;
@@ -205,7 +309,6 @@ public class DefaultResultSetHandler implements ResultSetHandler {
                     final String columnPrefix = getColumnPrefix(parentPrefix, resultMapping);
                     final ResultMap nestedResultMap = getNestedResultMap(rsw.getResultSet(), nestedResultMapId, columnPrefix);
                     CacheKey rowKey = createRowKey(nestedResultMap, rsw, columnPrefix);
-
                     final CacheKey combinedKey = combineKeys(rowKey, parentRowKey);
                     Object rowValue = nestedResultObjects.get(combinedKey);
                     boolean knownValue = (rowValue != null);
@@ -332,21 +435,21 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         return resultMappings;
     }
 
-//    private void storeObject(ResultHandler resultHandler, DefaultResultContext<Object> resultContext, Object rowValue,ResultMapping parentMapping, ResultSet rs) throws SQLException {
-//        if (parentMapping != null) {
-//            linkToParents(rs, parentMapping, rowValue);
-//        } else {
-//            callResultHandler(resultHandler, resultContext, rowValue);
-//        }
-//    }
+    private void storeObject(ResultHandler resultHandler, DefaultResultContext<Object> resultContext, Object rowValue,ResultMapping parentMapping, ResultSet rs) throws SQLException {
+        if (parentMapping != null) {
+           // linkToParents(rs, parentMapping, rowValue);
+        } else {
+            callResultHandler(resultHandler, resultContext, rowValue);
+        }
+    }
 
-//    private void callResultHandler(ResultHandler resultHandler, DefaultResultContext<Object> resultContext, Object rowValue) {
-//        resultContext.nextResultObject(rowValue);
-//        ((ResultHandler)resultHandler).handleResult(resultContext);
-//    }
-//
-//
-//    // MULTIPLE RESULT SETS
+    private void callResultHandler(ResultHandler resultHandler, DefaultResultContext<Object> resultContext, Object rowValue) {
+        resultContext.nextResultObject(rowValue);
+        ((ResultHandler)resultHandler).handleResult(resultContext);
+    }
+
+
+    // MULTIPLE RESULT SETS
 //    private void linkToParents(ResultSet rs, ResultMapping parentMapping, Object rowValue) throws SQLException {
 //        CacheKey parentKey = createKeyForMultipleResults(rs, parentMapping, parentMapping.getColumn(), parentMapping.getForeignColumn());
 //        List<DefaultResultSetHandler.PendingRelation> parents = pendingRelations.get(parentKey);
@@ -402,5 +505,13 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         }
     }
 
+    private List<Object> collapseSingleResultList(List<Object> multipleResults) {
+        return multipleResults.size() == 1 ? (List<Object>) multipleResults.get(0) : multipleResults;
+    }
+
+    private void cleanUpAfterHandlingResultSet() {
+        nestedResultObjects.clear();
+        simpleResultObjects.clear();
+    }
 
 }
