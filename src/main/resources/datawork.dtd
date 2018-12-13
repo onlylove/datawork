@@ -58,9 +58,8 @@
 <!ELEMENT collection (id*,result*,association*,collection*,(exclusion*|include*))>
 <!ATTLIST collection
         property CDATA #REQUIRED
-        resultMap CDATA #IMPLIED
+        resultMap CDATA #REQUIRED
         columnPrefix CDATA #IMPLIED
-        resultSet CDATA #IMPLIED
         joinTable CDATA #IMPLIED
         joinColumn CDATA #IMPLIED
         foreignColumn CDATA #IMPLIED
@@ -70,10 +69,8 @@
 <!ATTLIST association
         property CDATA #REQUIRED
         column CDATA #IMPLIED
-        resultMap CDATA #IMPLIED
-        typeHandler CDATA #IMPLIED
+        resultMap CDATA #REQUIRED
         columnPrefix CDATA #IMPLIED
-        resultSet CDATA #IMPLIED
         >
 
 <!ELEMENT exclusion EMPTY>
