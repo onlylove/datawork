@@ -7,6 +7,7 @@ import java.util.Set;
 public class ResultMap {
     private String id;
     private Class<?> type;
+    private String table;
     private List<ResultMapping> resultMappings;
     private List<ResultMapping> idResultMappings;
     private List<ResultMapping> propertyResultMappings;
@@ -16,8 +17,9 @@ public class ResultMap {
     public ResultMap() {
     }
 
-    public ResultMap(String id,Class<?> type,List<ResultMapping> resultMappings,List<ResultMapping> idResultMappings,List<ResultMapping> propertyResultMappings,Set<String> mappedColumns,boolean hasNestedResultMaps) {
+    public ResultMap(String id,String table,Class<?> type,List<ResultMapping> resultMappings,List<ResultMapping> idResultMappings,List<ResultMapping> propertyResultMappings,Set<String> mappedColumns,boolean hasNestedResultMaps) {
         this.id = id;
+        this.table = table;
         this.type = type;
         this.resultMappings = resultMappings;
         this.idResultMappings = idResultMappings;
@@ -58,5 +60,11 @@ public class ResultMap {
         hasNestedResultMaps = true;
     }
 
+    public String getTable() {
+        return table;
+    }
 
+    public void setTable(String table) {
+        this.table = table;
+    }
 }

@@ -1,19 +1,23 @@
 import com.alibaba.fastjson.JSON;
 import com.chenzr.datawork.executor.resultset.DefaultResultSetHandler;
-import dao.UserDao;
+import com.chenzr.datawork.session.Session;
+import com.chenzr.datawork.session.SessionFactory;
+import com.chenzr.datawork.session.SessionFactoryBuilder;
+import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
 import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.apache.ibatis.type.IntegerTypeHandler;
 
 import java.io.Reader;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class App {
 
-    public static void main(String [] args) throws Exception{
+    public static void main33(String [] args) throws Exception{
         try{
             String resource = "mybatis-config.xml";
             Reader reader = Resources.getResourceAsReader(resource);
@@ -30,8 +34,26 @@ public class App {
         }
     }
 
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+        try{
+            //1.声明链接参数
+            String url = "jdbc:mysql://localhost:3306/mybatis";//数据库的路径
+            String user = "root";
+            String password = "root";
+            //2.注册驱动
+            String driver = "com.mysql.jdbc.Driver";
+            Class.forName(driver);
+            UnpooledDataSource dataSource = new UnpooledDataSource(driver,url,user,password);
+            SessionFactory factory = SessionFactoryBuilder.build(dataSource);
+            Session session = factory.openSession();
+            session.selectOne("_Blog",null);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
-    public static void main33(String[] args) throws ClassNotFoundException, SQLException {
+
+    public static void main2222(String[] args) throws ClassNotFoundException, SQLException {
         //1.声明链接参数
         String url = "jdbc:mysql://localhost:3306/mybatis";//数据库的路径
         String user = "root";
@@ -76,9 +98,11 @@ public class App {
         //6.发送并执行sql语句，得到结果集
          pst.execute();
         DefaultResultSetHandler handler = new DefaultResultSetHandler();
-        handler.handleResultSets(pst);
+//        List<Object> objects = handler.handleResultSets(pst);
+//        System.out.println(JSON.toJSONString(objects));
         pst.close();
         con.close();
+
     }
 
 

@@ -8,7 +8,7 @@ public class ParameterMap {
     private Class<?> type;
     private List<ParameterMapping> parameterMappings;
 
-    private ParameterMap() {
+    public ParameterMap() {
     }
 
     public String getId() {

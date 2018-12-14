@@ -15,16 +15,15 @@ import com.chenzr.datawork.reflection.factory.DefaultObjectFactory;
 import com.chenzr.datawork.reflection.factory.ObjectFactory;
 import com.chenzr.datawork.reflection.wrapper.DefaultObjectWrapperFactory;
 import com.chenzr.datawork.reflection.wrapper.ObjectWrapperFactory;
-import com.chenzr.datawork.type.*;
-import model.Author;
-import model.Blog;
-import model.Comment;
-import model.Post;
+import com.chenzr.datawork.type.TypeHandler;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 public class DefaultResultSetHandler implements ResultSetHandler {
 
@@ -44,117 +43,117 @@ public class DefaultResultSetHandler implements ResultSetHandler {
 
     private ResultMap createResultMap() {
 
-        //========Author=========//
-        List<ResultMapping> AuthorResultMappings = new ArrayList<>();
+//        //========Author=========//
+//        List<ResultMapping> AuthorResultMappings = new ArrayList<>();
+//
+//        ResultMapping AuthorID = new ResultMapping("id", "id", Integer.class, JdbcType.INTEGER, new IntegerTypeHandler(), null, null, null);
+//        AuthorResultMappings.add(AuthorID);
+//        ResultMapping AuthorName = new ResultMapping("username", "username", String.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
+//        AuthorResultMappings.add(AuthorName);
+//
+//        List<ResultMapping> AuthorIDResultMappings = new ArrayList<>();
+//        AuthorIDResultMappings.add(AuthorID);
+//
+//        List<ResultMapping> AuthorPropertyResultMappings = new ArrayList<>();
+//        AuthorPropertyResultMappings.add(AuthorID);
+//        AuthorPropertyResultMappings.add(AuthorName);
+//
+//        Set<String> AuthormappedColumns = new HashSet<>();
+//        AuthormappedColumns.add("id");
+//        AuthormappedColumns.add("username");
+//
+//        ResultMap AuthorMap = new ResultMap("_Author", Author.class, AuthorResultMappings, AuthorIDResultMappings, AuthorPropertyResultMappings, AuthormappedColumns, true);
+//        resultMaps.put("_Author", AuthorMap);
+//        //========Author=========//
+//
+//        //========Comment=========//
+//        List<ResultMapping> commentResultMappings = new ArrayList<>();
+//
+//        ResultMapping commentresultID = new ResultMapping("id", "id", Integer.class, JdbcType.INTEGER, new IntegerTypeHandler(), null, null, null);
+//        commentResultMappings.add(commentresultID);
+//        ResultMapping commenresultName = new ResultMapping("name", "name", String.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
+//        commentResultMappings.add(commenresultName);
+//        ResultMapping commentresultNamecomment = new ResultMapping("comment", "text", String.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
+//        commentResultMappings.add(commentresultNamecomment);
+//
+//        List<ResultMapping> commentIDResultMappings = new ArrayList<>();
+//        commentIDResultMappings.add(commentresultID);
+//
+//        List<ResultMapping> commentPropertyResultMappings = new ArrayList<>();
+//        commentPropertyResultMappings.add(commentresultID);
+//        commentPropertyResultMappings.add(commenresultName);
+//        commentPropertyResultMappings.add(commentresultNamecomment);
+//
+//        Set<String> commentmappedColumns = new HashSet<>();
+//        commentmappedColumns.add("id");
+//        commentmappedColumns.add("name");
+//        commentmappedColumns.add("comment");
+//
+//        ResultMap commentMap = new ResultMap("_Comment", Comment.class, commentResultMappings, commentIDResultMappings, commentPropertyResultMappings, commentmappedColumns, true);
+//        resultMaps.put("_Comment", commentMap);
+//        //========Comment=========//
+//
+//        //========POST=========//
+//        List<ResultMapping> postResultMappings = new ArrayList<>();
+//
+//        ResultMapping postresultID = new ResultMapping("id", "id", Integer.class, JdbcType.INTEGER, new IntegerTypeHandler(), null, null, null);
+//        postResultMappings.add(postresultID);
+//        ResultMapping postresultbody = new ResultMapping("body", "body", String.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
+//        postResultMappings.add(postresultbody);
+//
+//        ResultMapping resultcomment = new ResultMapping("comments", null, Collection.class, null, new ArrayTypeHandler(), "comment_", null, "_Comment");
+//        postResultMappings.add(resultcomment);
+//
+//        List<ResultMapping> postIdResultMappings = new ArrayList<>();
+//        postIdResultMappings.add(postresultID);
+//
+//        List<ResultMapping> postPropertyResultMappings = new ArrayList<>();
+//        postPropertyResultMappings.add(postresultID);
+//        postPropertyResultMappings.add(postresultbody);
+//        postPropertyResultMappings.add(resultcomment);
+//
+//        Set<String> postmappedColumns = new HashSet<>();
+//        postmappedColumns.add("id");
+//        postmappedColumns.add("body");
+//
+//        ResultMap postMap = new ResultMap("_Post", Post.class, postResultMappings, postIdResultMappings, postPropertyResultMappings, postmappedColumns, true);
+//        resultMaps.put("_Post", postMap);
+//
+//        //========POST=========//
+//
+//
+//        //========Blog=========//
+//        List<ResultMapping> resultMappings = new ArrayList<>();
+//
+//        ResultMapping resultID = new ResultMapping("id", "id", Integer.class, JdbcType.INTEGER, new IntegerTypeHandler(), null, null, null);
+//        resultMappings.add(resultID);
+//        ResultMapping resultTitle = new ResultMapping("title", "title", Integer.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
+//        resultMappings.add(resultTitle);
+//
+//        ResultMapping resultPost = new ResultMapping("posts", null, Collection.class, null, new ArrayTypeHandler(), "post_", null, "_Post");
+//        resultMappings.add(resultPost);
+//
+//        ResultMapping resultAuthor = new ResultMapping("author", null, Author.class, null, null, "author_", null, "_Author");
+//        resultMappings.add(resultAuthor);
+//
+//        List<ResultMapping> idResultMappings = new ArrayList<>();
+//        idResultMappings.add(resultID);
+//
+//        List<ResultMapping> propertyResultMappings = new ArrayList<>();
+//        propertyResultMappings.add(resultID);
+//        propertyResultMappings.add(resultTitle);
+//        propertyResultMappings.add(resultPost);
+//        propertyResultMappings.add(resultAuthor);
+//
+//        Set<String> mappedColumns = new HashSet<>();
+//        mappedColumns.add("id");
+//        mappedColumns.add("title");
+//
+//        ResultMap map = new ResultMap("_Blog", Blog.class, resultMappings, idResultMappings, propertyResultMappings, mappedColumns, true);
+//        //========Blog=========//
+//        resultMaps.put("_Blog", postMap);
 
-        ResultMapping AuthorID = new ResultMapping("id", "id", Integer.class, JdbcType.INTEGER, new IntegerTypeHandler(), null, null, null);
-        AuthorResultMappings.add(AuthorID);
-        ResultMapping AuthorName = new ResultMapping("username", "username", String.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
-        AuthorResultMappings.add(AuthorName);
-
-        List<ResultMapping> AuthorIDResultMappings = new ArrayList<>();
-        AuthorIDResultMappings.add(AuthorID);
-
-        List<ResultMapping> AuthorPropertyResultMappings = new ArrayList<>();
-        AuthorPropertyResultMappings.add(AuthorID);
-        AuthorPropertyResultMappings.add(AuthorName);
-
-        Set<String> AuthormappedColumns = new HashSet<>();
-        AuthormappedColumns.add("id");
-        AuthormappedColumns.add("username");
-
-        ResultMap AuthorMap = new ResultMap("_Author", Author.class, AuthorResultMappings, AuthorIDResultMappings, AuthorPropertyResultMappings, AuthormappedColumns, true);
-        resultMaps.put("_Author", AuthorMap);
-        //========Author=========//
-
-        //========Comment=========//
-        List<ResultMapping> commentResultMappings = new ArrayList<>();
-
-        ResultMapping commentresultID = new ResultMapping("id", "id", Integer.class, JdbcType.INTEGER, new IntegerTypeHandler(), null, null, null);
-        commentResultMappings.add(commentresultID);
-        ResultMapping commenresultName = new ResultMapping("name", "name", String.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
-        commentResultMappings.add(commenresultName);
-        ResultMapping commentresultNamecomment = new ResultMapping("comment", "text", String.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
-        commentResultMappings.add(commentresultNamecomment);
-
-        List<ResultMapping> commentIDResultMappings = new ArrayList<>();
-        commentIDResultMappings.add(commentresultID);
-
-        List<ResultMapping> commentPropertyResultMappings = new ArrayList<>();
-        commentPropertyResultMappings.add(commentresultID);
-        commentPropertyResultMappings.add(commenresultName);
-        commentPropertyResultMappings.add(commentresultNamecomment);
-
-        Set<String> commentmappedColumns = new HashSet<>();
-        commentmappedColumns.add("id");
-        commentmappedColumns.add("name");
-        commentmappedColumns.add("comment");
-
-        ResultMap commentMap = new ResultMap("_Comment", Comment.class, commentResultMappings, commentIDResultMappings, commentPropertyResultMappings, commentmappedColumns, true);
-        resultMaps.put("_Comment", commentMap);
-        //========Comment=========//
-
-        //========POST=========//
-        List<ResultMapping> postResultMappings = new ArrayList<>();
-
-        ResultMapping postresultID = new ResultMapping("id", "id", Integer.class, JdbcType.INTEGER, new IntegerTypeHandler(), null, null, null);
-        postResultMappings.add(postresultID);
-        ResultMapping postresultbody = new ResultMapping("body", "body", String.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
-        postResultMappings.add(postresultbody);
-
-        ResultMapping resultcomment = new ResultMapping("comments", null, Collection.class, null, new ArrayTypeHandler(), "comment_", null, "_Comment");
-        postResultMappings.add(resultcomment);
-
-        List<ResultMapping> postIdResultMappings = new ArrayList<>();
-        postIdResultMappings.add(postresultID);
-
-        List<ResultMapping> postPropertyResultMappings = new ArrayList<>();
-        postPropertyResultMappings.add(postresultID);
-        postPropertyResultMappings.add(postresultbody);
-        postPropertyResultMappings.add(resultcomment);
-
-        Set<String> postmappedColumns = new HashSet<>();
-        postmappedColumns.add("id");
-        postmappedColumns.add("body");
-
-        ResultMap postMap = new ResultMap("_Post", Post.class, postResultMappings, postIdResultMappings, postPropertyResultMappings, postmappedColumns, true);
-        resultMaps.put("_Post", postMap);
-
-        //========POST=========//
-
-
-        //========Blog=========//
-        List<ResultMapping> resultMappings = new ArrayList<>();
-
-        ResultMapping resultID = new ResultMapping("id", "id", Integer.class, JdbcType.INTEGER, new IntegerTypeHandler(), null, null, null);
-        resultMappings.add(resultID);
-        ResultMapping resultTitle = new ResultMapping("title", "title", Integer.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
-        resultMappings.add(resultTitle);
-
-        ResultMapping resultPost = new ResultMapping("posts", null, Collection.class, null, new ArrayTypeHandler(), "post_", null, "_Post");
-        resultMappings.add(resultPost);
-
-        ResultMapping resultAuthor = new ResultMapping("author", null, Author.class, null, null, "author_", null, "_Author");
-        resultMappings.add(resultAuthor);
-
-        List<ResultMapping> idResultMappings = new ArrayList<>();
-        idResultMappings.add(resultID);
-
-        List<ResultMapping> propertyResultMappings = new ArrayList<>();
-        propertyResultMappings.add(resultID);
-        propertyResultMappings.add(resultTitle);
-        propertyResultMappings.add(resultPost);
-        propertyResultMappings.add(resultAuthor);
-
-        Set<String> mappedColumns = new HashSet<>();
-        mappedColumns.add("id");
-        mappedColumns.add("title");
-
-        ResultMap map = new ResultMap("_Blog", Blog.class, resultMappings, idResultMappings, propertyResultMappings, mappedColumns, true);
-        //========Blog=========//
-        resultMaps.put("_Blog", postMap);
-
-        return map;
+        return null;
     }
 
 
@@ -298,7 +297,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     }
 
     //
-    // NESTED RESULT MAP (JOIN MAPPING)
+    // NESTED RESULT MAP (Join MAPPING)
     //
     private boolean applyNestedResultMappings(ResultSetWrapper rsw, ResultMap resultMap, MetaObject metaObject, String parentPrefix, CacheKey parentRowKey, boolean newObject) {
         boolean foundValues = false;
@@ -448,19 +447,6 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         ((ResultHandler)resultHandler).handleResult(resultContext);
     }
 
-
-    // MULTIPLE RESULT SETS
-//    private void linkToParents(ResultSet rs, ResultMapping parentMapping, Object rowValue) throws SQLException {
-//        CacheKey parentKey = createKeyForMultipleResults(rs, parentMapping, parentMapping.getColumn(), parentMapping.getForeignColumn());
-//        List<DefaultResultSetHandler.PendingRelation> parents = pendingRelations.get(parentKey);
-//        if (parents != null) {
-//            for (org.apache.ibatis.executor.resultset.DefaultResultSetHandler.PendingRelation parent : parents) {
-//                if (parent != null && rowValue != null) {
-//                    linkObjects(parent.metaObject, parent.propertyMapping, rowValue);
-//                }
-//            }
-//        }
-//    }
 
     private ResultSetWrapper getFirstResultSet(Statement stmt) throws SQLException {
         ResultSet rs = stmt.getResultSet();

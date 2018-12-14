@@ -43,15 +43,26 @@ public enum JdbcType {
 
     public final int TYPE_CODE;
     private static Map<Integer,JdbcType> codeLookup = new HashMap<Integer,JdbcType>();
+    private static Map<String,JdbcType> nameLookup = new HashMap<String,JdbcType>();
 
     static {
         for (JdbcType type : JdbcType.values()) {
             codeLookup.put(type.TYPE_CODE, type);
         }
+        for (JdbcType type : JdbcType.values()) {
+            nameLookup.put(type.name(), type);
+        }
     }
 
     JdbcType(int code) {
         this.TYPE_CODE = code;
+    }
+
+    public static JdbcType forName(String name)  {
+        if(null != null && "".equals(name)){
+            return nameLookup.get(name.trim().toUpperCase());
+        }
+        return null;
     }
 
     public static JdbcType forCode(int code)  {

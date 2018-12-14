@@ -3,8 +3,6 @@ package com.chenzr.datawork.mapping;
 import com.chenzr.datawork.type.JdbcType;
 import com.chenzr.datawork.type.TypeHandler;
 
-import java.util.List;
-
 public class ResultMapping {
 
     private String property;
@@ -13,22 +11,28 @@ public class ResultMapping {
     private JdbcType jdbcType;
     private TypeHandler<?> typeHandler;
     private String columnPrefix;
-    private List<ResultFlag> flags;
+    private ResultFlag flag;
     private String nestedResultMapId;
+    private String joinTable;
+    private String joinColumn;
+    private String foreignColumn;
 
     public ResultMapping() {
     }
 
     public ResultMapping(String property,String column,Class<?> javaType,JdbcType jdbcType,TypeHandler<?> typeHandler,
-                         String columnPrefix,List<ResultFlag> flags,String nestedResultMapId) {
+                         String columnPrefix,ResultFlag flag,String nestedResultMapId,String foreignColumn,String joinTable,String joinColumn) {
         this.property = property;
         this.column = column;
         this.javaType = javaType;
         this.jdbcType = jdbcType;
         this.typeHandler = typeHandler;
         this.columnPrefix = columnPrefix;
-        this.flags = flags;
+        this.flag = flag;
         this.nestedResultMapId = nestedResultMapId;
+        this.foreignColumn = foreignColumn;
+        this.joinColumn = joinColumn;
+        this.joinTable = joinTable;
     }
 
     public String getProperty() {
@@ -60,10 +64,21 @@ public class ResultMapping {
         return columnPrefix;
     }
 
-    public List<ResultFlag> getFlags() {
-        return flags;
+    public ResultFlag getFlag() {
+        return flag;
     }
 
+    public String getJoinTable() {
+        return joinTable;
+    }
+
+    public String getJoinColumn() {
+        return joinColumn;
+    }
+
+    public String getForeignColumn() {
+        return foreignColumn;
+    }
 
     @Override
     public boolean equals(Object o) {
