@@ -1,6 +1,7 @@
 package com.chenzr.datawork.executor;
 
-import com.chenzr.datawork.executor.result.ResultHandler;
+import com.chenzr.datawork.executor.resultset.DefaultResultSetHandler;
+import com.chenzr.datawork.executor.resultset.ResultSetHandler;
 import com.chenzr.datawork.mapping.MappedStatement;
 
 import java.sql.Connection;
@@ -10,7 +11,7 @@ import java.util.List;
 public abstract class BaseExecutor implements Executor {
 
     protected Executor wrapper;
-    private Connection connection;
+    protected Connection connection;
 
     public BaseExecutor(Connection _connection) {
         this.connection = _connection;
@@ -26,14 +27,14 @@ public abstract class BaseExecutor implements Executor {
     @Override
     public <E> List<E> query(MappedStatement ms, Object parameter) {
         try {
-            return doQuery(ms,parameter);
+            return doQuery(ms,parameter, new DefaultResultSetHandler(ms));
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter) throws SQLException;
+    protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, ResultSetHandler resultSetHandler) throws SQLException;
 
 
 }

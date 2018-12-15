@@ -59,7 +59,7 @@ public enum JdbcType {
     }
 
     public static JdbcType forName(String name)  {
-        if(null != null && "".equals(name)){
+        if(null != name && !"".equals(name)){
             return nameLookup.get(name.trim().toUpperCase());
         }
         return null;

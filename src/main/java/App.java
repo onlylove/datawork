@@ -1,5 +1,4 @@
 import com.alibaba.fastjson.JSON;
-import com.chenzr.datawork.executor.resultset.DefaultResultSetHandler;
 import com.chenzr.datawork.session.Session;
 import com.chenzr.datawork.session.SessionFactory;
 import com.chenzr.datawork.session.SessionFactoryBuilder;
@@ -17,7 +16,7 @@ import java.sql.SQLException;
 
 public class App {
 
-    public static void main33(String [] args) throws Exception{
+    public static void maintttt(String [] args) throws Exception{
         try{
             String resource = "mybatis-config.xml";
             Reader reader = Resources.getResourceAsReader(resource);
@@ -46,7 +45,8 @@ public class App {
             UnpooledDataSource dataSource = new UnpooledDataSource(driver,url,user,password);
             SessionFactory factory = SessionFactoryBuilder.build(dataSource);
             Session session = factory.openSession();
-            session.selectOne("_Blog",null);
+            Object object =  session.selectList("_Blog",null);
+            System.out.println(JSON.toJSON(object));
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -97,7 +97,7 @@ public class App {
         PreparedStatement pst = con.prepareStatement(sql);
         //6.发送并执行sql语句，得到结果集
          pst.execute();
-        DefaultResultSetHandler handler = new DefaultResultSetHandler();
+//        DefaultResultSetHandler handler = new DefaultResultSetHandler();
 //        List<Object> objects = handler.handleResultSets(pst);
 //        System.out.println(JSON.toJSONString(objects));
         pst.close();

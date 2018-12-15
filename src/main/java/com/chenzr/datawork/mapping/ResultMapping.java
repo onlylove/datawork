@@ -80,6 +80,10 @@ public class ResultMapping {
         return foreignColumn;
     }
 
+    public void setColumnPrefix(String columnPrefix) {
+        this.columnPrefix = columnPrefix;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

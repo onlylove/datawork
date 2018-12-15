@@ -5,6 +5,7 @@ import com.chenzr.datawork.cache.CacheKey;
 import com.chenzr.datawork.executor.ExecutorException;
 import com.chenzr.datawork.executor.result.DefaultResultHandler;
 import com.chenzr.datawork.executor.result.ResultHandler;
+import com.chenzr.datawork.mapping.MappedStatement;
 import com.chenzr.datawork.mapping.ResultMap;
 import com.chenzr.datawork.mapping.ResultMapping;
 import com.chenzr.datawork.reflection.DefaultReflectorFactory;
@@ -31,8 +32,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     private ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
     private ObjectFactory objectFactory = new DefaultObjectFactory();
     private ResultHandler resultHandler = null;
-
-    private HashMap<String, ResultMap> resultMaps = new HashMap<>();
+    private MappedStatement mappedStatement;
 
     private HashMap<CacheKey, Object> nestedResultObjects = new HashMap<CacheKey, Object>();
     private HashMap<CacheKey, Object> simpleResultObjects = new HashMap<CacheKey, Object>();
@@ -41,128 +41,16 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         return MetaObject.forObject(object, objectFactory, objectWrapperFactory, reflectorFactory);
     }
 
-    private ResultMap createResultMap() {
-
-//        //========Author=========//
-//        List<ResultMapping> AuthorResultMappings = new ArrayList<>();
-//
-//        ResultMapping AuthorID = new ResultMapping("id", "id", Integer.class, JdbcType.INTEGER, new IntegerTypeHandler(), null, null, null);
-//        AuthorResultMappings.add(AuthorID);
-//        ResultMapping AuthorName = new ResultMapping("username", "username", String.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
-//        AuthorResultMappings.add(AuthorName);
-//
-//        List<ResultMapping> AuthorIDResultMappings = new ArrayList<>();
-//        AuthorIDResultMappings.add(AuthorID);
-//
-//        List<ResultMapping> AuthorPropertyResultMappings = new ArrayList<>();
-//        AuthorPropertyResultMappings.add(AuthorID);
-//        AuthorPropertyResultMappings.add(AuthorName);
-//
-//        Set<String> AuthormappedColumns = new HashSet<>();
-//        AuthormappedColumns.add("id");
-//        AuthormappedColumns.add("username");
-//
-//        ResultMap AuthorMap = new ResultMap("_Author", Author.class, AuthorResultMappings, AuthorIDResultMappings, AuthorPropertyResultMappings, AuthormappedColumns, true);
-//        resultMaps.put("_Author", AuthorMap);
-//        //========Author=========//
-//
-//        //========Comment=========//
-//        List<ResultMapping> commentResultMappings = new ArrayList<>();
-//
-//        ResultMapping commentresultID = new ResultMapping("id", "id", Integer.class, JdbcType.INTEGER, new IntegerTypeHandler(), null, null, null);
-//        commentResultMappings.add(commentresultID);
-//        ResultMapping commenresultName = new ResultMapping("name", "name", String.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
-//        commentResultMappings.add(commenresultName);
-//        ResultMapping commentresultNamecomment = new ResultMapping("comment", "text", String.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
-//        commentResultMappings.add(commentresultNamecomment);
-//
-//        List<ResultMapping> commentIDResultMappings = new ArrayList<>();
-//        commentIDResultMappings.add(commentresultID);
-//
-//        List<ResultMapping> commentPropertyResultMappings = new ArrayList<>();
-//        commentPropertyResultMappings.add(commentresultID);
-//        commentPropertyResultMappings.add(commenresultName);
-//        commentPropertyResultMappings.add(commentresultNamecomment);
-//
-//        Set<String> commentmappedColumns = new HashSet<>();
-//        commentmappedColumns.add("id");
-//        commentmappedColumns.add("name");
-//        commentmappedColumns.add("comment");
-//
-//        ResultMap commentMap = new ResultMap("_Comment", Comment.class, commentResultMappings, commentIDResultMappings, commentPropertyResultMappings, commentmappedColumns, true);
-//        resultMaps.put("_Comment", commentMap);
-//        //========Comment=========//
-//
-//        //========POST=========//
-//        List<ResultMapping> postResultMappings = new ArrayList<>();
-//
-//        ResultMapping postresultID = new ResultMapping("id", "id", Integer.class, JdbcType.INTEGER, new IntegerTypeHandler(), null, null, null);
-//        postResultMappings.add(postresultID);
-//        ResultMapping postresultbody = new ResultMapping("body", "body", String.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
-//        postResultMappings.add(postresultbody);
-//
-//        ResultMapping resultcomment = new ResultMapping("comments", null, Collection.class, null, new ArrayTypeHandler(), "comment_", null, "_Comment");
-//        postResultMappings.add(resultcomment);
-//
-//        List<ResultMapping> postIdResultMappings = new ArrayList<>();
-//        postIdResultMappings.add(postresultID);
-//
-//        List<ResultMapping> postPropertyResultMappings = new ArrayList<>();
-//        postPropertyResultMappings.add(postresultID);
-//        postPropertyResultMappings.add(postresultbody);
-//        postPropertyResultMappings.add(resultcomment);
-//
-//        Set<String> postmappedColumns = new HashSet<>();
-//        postmappedColumns.add("id");
-//        postmappedColumns.add("body");
-//
-//        ResultMap postMap = new ResultMap("_Post", Post.class, postResultMappings, postIdResultMappings, postPropertyResultMappings, postmappedColumns, true);
-//        resultMaps.put("_Post", postMap);
-//
-//        //========POST=========//
-//
-//
-//        //========Blog=========//
-//        List<ResultMapping> resultMappings = new ArrayList<>();
-//
-//        ResultMapping resultID = new ResultMapping("id", "id", Integer.class, JdbcType.INTEGER, new IntegerTypeHandler(), null, null, null);
-//        resultMappings.add(resultID);
-//        ResultMapping resultTitle = new ResultMapping("title", "title", Integer.class, JdbcType.VARCHAR, new StringTypeHandler(), null, null, null);
-//        resultMappings.add(resultTitle);
-//
-//        ResultMapping resultPost = new ResultMapping("posts", null, Collection.class, null, new ArrayTypeHandler(), "post_", null, "_Post");
-//        resultMappings.add(resultPost);
-//
-//        ResultMapping resultAuthor = new ResultMapping("author", null, Author.class, null, null, "author_", null, "_Author");
-//        resultMappings.add(resultAuthor);
-//
-//        List<ResultMapping> idResultMappings = new ArrayList<>();
-//        idResultMappings.add(resultID);
-//
-//        List<ResultMapping> propertyResultMappings = new ArrayList<>();
-//        propertyResultMappings.add(resultID);
-//        propertyResultMappings.add(resultTitle);
-//        propertyResultMappings.add(resultPost);
-//        propertyResultMappings.add(resultAuthor);
-//
-//        Set<String> mappedColumns = new HashSet<>();
-//        mappedColumns.add("id");
-//        mappedColumns.add("title");
-//
-//        ResultMap map = new ResultMap("_Blog", Blog.class, resultMappings, idResultMappings, propertyResultMappings, mappedColumns, true);
-//        //========Blog=========//
-//        resultMaps.put("_Blog", postMap);
-
-        return null;
+    public DefaultResultSetHandler(MappedStatement ms){
+        this.mappedStatement = ms;
     }
-
 
     @Override
     public List<Object> handleResultSets(Statement stmt) throws SQLException {
         final List<Object> multipleResults = new ArrayList<Object>();
         try{
             ResultSetWrapper rsw = getFirstResultSet(stmt);
-            ResultMap rm = createResultMap();
+            ResultMap rm = mappedStatement.getResultMap(mappedStatement.getId());
             handleResultSet(rsw, rm, multipleResults, null);
             return collapseSingleResultList(multipleResults);
         }catch (Exception e){
@@ -325,7 +213,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     }
 
     private ResultMap getNestedResultMap(ResultSet rs, String nestedResultMapId, String columnPrefix) throws SQLException {
-        ResultMap nestedResultMap = resultMaps.get(nestedResultMapId);
+        ResultMap nestedResultMap = mappedStatement.getResultMap(nestedResultMapId);
         return nestedResultMap;
     }
 

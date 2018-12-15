@@ -7,8 +7,6 @@ import java.io.FileOutputStream;
 public class GenerateNewClassByJavassist {
 
     public static void main(String[] args) throws Exception {
-
-        //ClassPool：CtClass对象的容器
         ClassPool pool = ClassPool.getDefault();
 
         //通过ClassPool生成一个public新类Emp.java
